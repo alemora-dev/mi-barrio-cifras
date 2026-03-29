@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Barrio en Cifras - El Pulso de Nuestra Data</title>
+    <!-- Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <!-- MapLibre GL JS -->
+    <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
+    <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
+    <!-- Main Style -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="app">
+
+        <!-- Fullscreen 3D Map -->
+        <div id="map"></div>
+
+        <!-- Initial Hero Overlay -->
+        <div id="hero-overlay" class="glassmorphism">
+            <h1>El Latido Nacional</h1>
+            <p>Selecciona un municipio en el mapa para analizar su contratación pública en tiempo real a través de SECOP
+                II.</p>
+        </div>
+
+        <!-- Dynamic Side Panel (Hidden by default) -->
+        <aside id="side-panel" class="glassmorphism hidden">
+            <div class="panel-header">
+                <h2 id="municipio-title">Cargando...</h2>
+                <button id="close-panel" aria-label="Cerrar panel">✕</button>
+            </div>
+
+            <div id="loading-spinner" class="spinner active">
+                <div class="bounce1"></div>
+                <div class="bounce2"></div>
+                <div class="bounce3"></div>
+            </div>
+
+            <div id="panel-content" class="hidden">
+                <div class="stat-grid">
+                    <div class="stat-highlight">
+                        <span id="contratos-count" class="value">-</span>
+                        <span class="label">Contratos</span>
+                    </div>
+                    <div class="stat-highlight">
+                        <span id="contratos-total" class="value">-</span>
+                        <span class="label">Valor Total</span>
+                    </div>
+                </div>
+
+                <div class="chart-wrapper">
+                    <canvas id="mainChart"></canvas>
+                </div>
+                <figcaption id="chart-caption">Distribución por Tipo de Contrato</figcaption>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Main Script -->
+    <script src="app.js"></script>
+</body>
+
+</html>

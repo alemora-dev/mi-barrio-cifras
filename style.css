@@ -1,0 +1,455 @@
+/* ==========================================================================
+   CSS Variables & Theme Tokens
+   ========================================================================== */
+:root {
+    /* Color Palette */
+    --bg-dark: #0b0f19;
+    --bg-surface: rgba(26, 31, 53, 0.4);
+    --bg-card: rgba(30, 41, 59, 0.7);
+
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-accent: #38bdf8;
+
+    /* Gradients */
+    --grad-primary: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+    --grad-glass: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+
+    /* Orbs colors */
+    --orb-1: #38bdf8;
+    --orb-2: #c084fc;
+    --orb-3: #10b981;
+    --orb-4: #f43f5e;
+
+    /* Borders */
+    --border-glass: rgba(255, 255, 255, 0.1);
+
+    /* Typography */
+    --font-heading: 'Outfit', sans-serif;
+    --font-body: 'Inter', sans-serif;
+
+    /* Z-index */
+    --z-background: 0;
+    --z-visualization: 10;
+    --z-content: 20;
+}
+
+/* ==========================================================================
+   Base & Reset
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   Layout Structure : Dynamic Dashboard
+   ========================================================================== */
+#app {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ==========================================================================
+   MapLibre Fullscreen
+   ========================================================================== */
+#map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: var(--z-background);
+}
+
+/* ==========================================================================
+   Hero Overlay (Initial State)
+   ========================================================================== */
+#hero-overlay {
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    max-width: 450px;
+    z-index: var(--z-content);
+    pointer-events: none;
+    /* Let user click the map underneath */
+}
+
+@media (max-width: 767px) {
+    #hero-overlay {
+        top: auto;
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        max-width: none;
+        padding: 1.5rem;
+    }
+
+    #hero-overlay h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    #hero-overlay p {
+        font-size: 0.9rem;
+        margin-bottom: 0;
+    }
+}
+
+/* ==========================================================================
+   Dynamic Side Panel
+   ========================================================================== */
+#side-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 450px;
+    height: 100vh;
+    z-index: var(--z-visualization);
+    border-radius: 0;
+    border-top: none;
+    border-right: none;
+    border-bottom: none;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    background: rgba(11, 15, 25, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    overflow-y: auto;
+}
+
+#side-panel:not(.hidden) {
+    transform: translateX(0);
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-glass);
+}
+
+#municipio-title {
+    margin: 0;
+    font-size: 1.8rem;
+    color: var(--text-accent);
+}
+
+#close-panel {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+#close-panel:hover {
+    color: #fff;
+}
+
+/* Loading Spinner */
+.spinner {
+    display: none;
+    text-align: center;
+    margin: 3rem 0;
+}
+
+.spinner.active {
+    display: block;
+}
+
+.spinner>div {
+    width: 12px;
+    height: 12px;
+    background-color: var(--text-accent);
+    border-radius: 100%;
+    display: inline-block;
+    animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+    margin: 0 4px;
+}
+
+.spinner .bounce1 {
+    animation-delay: -0.32s;
+}
+
+.spinner .bounce2 {
+    animation-delay: -0.16s;
+}
+
+@keyframes sk-bouncedelay {
+
+    0%,
+    80%,
+    100% {
+        transform: scale(0);
+    }
+
+    40% {
+        transform: scale(1);
+    }
+}
+
+/* Content Area */
+#panel-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Grid for stats */
+.stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-highlight {
+    margin-top: 0;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 1rem;
+    border-radius: 12px;
+    border-left: 3px solid var(--text-accent);
+}
+
+.stat-highlight .value {
+    font-size: 1.8rem;
+}
+
+/* Chart */
+.chart-wrapper {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    /* Fixed height for consistent canvas sizing */
+    margin-bottom: 1.5rem;
+}
+
+#chart-caption {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-glass);
+}
+
+@media (max-width: 767px) {
+    #side-panel {
+        top: auto;
+        bottom: 0;
+        right: 0;
+        width: 100vw;
+        height: 60vh;
+        transform: translateY(100%);
+        border-radius: 20px 20px 0 0;
+        border-top: 1px solid var(--border-glass);
+        border-left: none;
+    }
+
+    #side-panel:not(.hidden) {
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================================================
+   Aesthetics & Typography
+   ========================================================================== */
+h1,
+h2,
+h3 {
+    font-family: var(--font-heading);
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-weight: 800;
+}
+
+h1 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    line-height: 1.1;
+    background: var(--grad-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1.5rem;
+}
+
+h2 {
+    font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+    font-weight: 600;
+}
+
+p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    max-width: 45ch;
+}
+
+/* Glassmorphism Card Style */
+.glassmorphism {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-glass);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+.glassmorphism::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--grad-glass);
+    pointer-events: none;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    background: rgba(56, 189, 248, 0.1);
+    color: var(--text-accent);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    margin-bottom: 2rem;
+}
+
+.stat-highlight {
+    margin-top: 2rem;
+    display: inline-flex;
+    flex-direction: column;
+    border-left: 3px solid var(--text-accent);
+    padding-left: 1rem;
+}
+
+.stat-highlight .value {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.stat-highlight .label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.2rem;
+}
+
+.btn-primary {
+    display: inline-block;
+    padding: 1rem 2rem;
+    background: var(--grad-primary);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(56, 189, 248, 0.4);
+}
+
+/* ==========================================================================
+   Micro-Animations & Effects
+   ========================================================================== */
+
+/* Removed Orbs as map is now the visual core */
+
+/* Scroll Indicator */
+.scroll-indicator {
+    margin-top: 4rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    animation: pulseFade 2s infinite;
+}
+
+.scroll-indicator p {
+    margin: 0;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.mouse {
+    width: 24px;
+    height: 36px;
+    border: 2px solid var(--text-secondary);
+    border-radius: 12px;
+    display: block;
+    position: relative;
+}
+
+.wheel {
+    width: 4px;
+    height: 6px;
+    background: var(--text-secondary);
+    border-radius: 2px;
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: scrollWheel 2s ease infinite;
+}
+
+@keyframes scrollWheel {
+    0% {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(-50%, 15px);
+        opacity: 0;
+    }
+}
+
+@keyframes pulseFade {
+
+    0%,
+    100% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
